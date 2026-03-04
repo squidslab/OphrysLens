@@ -55,7 +55,7 @@ export default function ResultsDisplay({
         result={result} 
         preview={preview} 
         analyzedMode={analyzedCropMode} 
-        strategyName={displayStrategyName} // <--- Pass Name
+        strategyName={displayStrategyName}
       />
     );
   }

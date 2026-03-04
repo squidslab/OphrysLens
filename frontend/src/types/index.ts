@@ -8,15 +8,15 @@ export interface ApiResponse {
   image_cropped?: string; // Base64 of the crop
   
   // Explainability fields (Original/Primary)
-  integrated_gradients?: string; 
-  occlusion?: string;
+  integrated_gradients?: string | null; 
+  occlusion?: string | null; 
 
   // Comparison/Secondary fields (The ones causing the error)
   predicted_class_cropped?: string;
   confidence_cropped?: number;
   all_classes_probs_cropped?: number[];
-  integrated_gradients_cropped?: string;
-  occlusion_cropped?: string;
+  integrated_gradients_cropped?: string | null; 
+  occlusion_cropped?: string | null; 
 
   // Error handling
   error?: string;

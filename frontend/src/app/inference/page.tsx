@@ -28,7 +28,7 @@ export default function OrchidDashboard() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [resultCache, setResultCache] = useState<Record<string, ApiResponse>>({});
 
-  // --- STATI MODELLI (Tipizzato correttamente invece di string[]) ---
+  // --- STATI MODELLI ---
   const [availableModels, setAvailableModels] = useState<AvailableModelsResponse>({ "6class": [] });
 
   // --- STATI CONFIGURAZIONE ---
@@ -132,26 +132,41 @@ export default function OrchidDashboard() {
       }
 
       // --- EXPLAINABILITY ---
-      if (useGpu && (showOcclusion || showIG)) {
-        const explainFormData = new FormData();
-        explainFormData.append("image", selectedFile);
-        explainFormData.append("use_crop", cropMode === "external" ? "true" : "false");
-        explainFormData.append("model_name", selectedModel6Class);
+      if (showOcclusion || showIG) {
+        console.log("--- START EXPLAINABILITY ---");
+        const fetchExplanation = async (isCropped: boolean) => {
+          const fd = new FormData();
+          fd.append("image", selectedFile);
+          fd.append("use_crop", isCropped ? "true" : "false");
+          fd.append("model_name", selectedModel6Class);
 
-        if (showOcclusion) {
-          const resOcc = await fetch(`${BASE_API_URL}/generate_occlusion`, { method: "POST", body: explainFormData });
-          if (resOcc.ok) {
-            const dataOcc = await resOcc.json();
-            finalData.occlusion = dataOcc.explanation_image;
-          }
+          const requests = [];
+          if (showOcclusion) requests.push(fetch(`${BASE_API_URL}/generate_occlusion`, { method: "POST", body: fd }));
+          if (showIG) requests.push(fetch(`${BASE_API_URL}/generate_explain`, { method: "POST", body: fd }));
+
+          try {
+            const responses = await Promise.all(requests);
+            for (const res of responses) {
+              if (res.ok) {
+                const data = await res.json();
+                if (data.method === 'occlusion') {
+                  if (isCropped) finalData.occlusion_cropped = data.explanation_image;
+                  else finalData.occlusion = data.explanation_image;
+                } else if (data.method === 'integrated_gradients') {
+                  if (isCropped) finalData.integrated_gradients_cropped = data.explanation_image;
+                  else finalData.integrated_gradients = data.explanation_image;
+                }
+              }
+            }
+          } catch (e) { console.error("XAI Fetch error:", e); }
+        };
+
+        if (cropMode === "compare") {
+          await Promise.all([fetchExplanation(false), fetchExplanation(true)]);
+        } else {
+          await fetchExplanation(cropMode === "external");
         }
-        if (showIG) {
-          const resIG = await fetch(`${BASE_API_URL}/generate_explain`, { method: "POST", body: explainFormData });
-          if (resIG.ok) {
-            const dataIG = await resIG.json();
-            finalData.integrated_gradients = dataIG.explanation_image;
-          }
-        }
+        console.log("--- END EXPLAINABILITY ---");
       }
 
       setResult(finalData);
@@ -160,8 +175,6 @@ export default function OrchidDashboard() {
       setResultCache(prev => ({ ...prev, [currentKey]: finalData }));
 
     } catch (err) {
-      // --- FIX ERRORE 154:19 ---
-      // In TypeScript, gli errori catturati sono di tipo 'unknown'
       const errorMessage = err instanceof Error ? err.message : "Errore sconosciuto";
       setApiError(errorMessage);
     } finally {
@@ -170,30 +183,36 @@ export default function OrchidDashboard() {
   };
 
   return (
-    <div className="h-screen bg-[#F6F4EF] text-[#2A2F2C] flex flex-col md:flex-row font-sans overflow-hidden">
-      <DashboardSidebar
-        config={{ 
-          modelStrategy, 
-          cropMode, 
-          useGpu, 
-          showOcclusion, 
-          showIG, 
-          selectedModel6Class 
-        }}
-        availableModels={availableModels}
-        setConfig={{ 
-          setModelStrategy, 
-          setCropMode, 
-          setUseGpu, 
-          setShowOcclusion, 
-          setShowIG, 
-          setSelectedModel6Class 
-        }}
-        fileState={{ selectedFile, handleFileChange }}
-        actionState={{ loading, handleAnalyze, apiError }}
-      />
+    // CAMBIO: min-h-screen e rimosso overflow-hidden
+    <div className="min-h-screen bg-[#F6F4EF] text-[#2A2F2C] flex flex-col md:flex-row font-sans">
+      
+      {/* Sidebar: resa sticky per restare fissa durante lo scroll */}
+      <aside className="md:sticky md:top-0 md:h-screen md:w-80 flex-shrink-0 z-10">
+        <DashboardSidebar
+          config={{ 
+            modelStrategy, 
+            cropMode, 
+            useGpu, 
+            showOcclusion, 
+            showIG, 
+            selectedModel6Class 
+          }}
+          availableModels={availableModels}
+          setConfig={{ 
+            setModelStrategy, 
+            setCropMode, 
+            setUseGpu, 
+            setShowOcclusion, 
+            setShowIG, 
+            setSelectedModel6Class 
+          }}
+          fileState={{ selectedFile, handleFileChange }}
+          actionState={{ loading, handleAnalyze, apiError }}
+        />
+      </aside>
 
-      <main className="flex-1 p-8 md:p-12 overflow-y-auto bg-pink-50 relative">
+      {/* Main: rimosso overflow-y-auto per usare lo scroll nativo della pagina */}
+      <main className="flex-1 p-8 md:p-12 bg-pink-50 relative min-w-0">
         <header className="mb-10">
           <h1 className="text-3xl md:text-4xl font-extrabold text-emerald-900 mb-2 flex items-center gap-3">
             <span className="text-pink-600">🌸</span> Inference for orchids

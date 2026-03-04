@@ -21,8 +21,8 @@ function XaiDisplay({
   title, 
   onImageClick 
 }: { 
-  ig?: string, 
-  occ?: string, 
+  ig?: string | null, 
+  occ?: string | null, 
   title: string, 
   onImageClick: (src: string, label: string) => void 
 }) {
@@ -89,11 +89,31 @@ export default function CompareView({ result, preview, analyzedMode, strategyNam
   };
 
   const rightData = {
-    class: analyzedMode === 'external' ? result.predicted_class : result.predicted_class_cropped,
-    confidence: analyzedMode === 'external' ? result.confidence : (result.confidence_cropped || 0),
-    probs: analyzedMode === 'external' ? result.all_classes_probs : result.all_classes_probs_cropped,
-    ig: result.integrated_gradients_cropped, 
-    occ: result.occlusion_cropped,
+    class:
+      analyzedMode === "external"
+        ? result.predicted_class
+        : result.predicted_class_cropped,
+
+    confidence:
+      analyzedMode === "external"
+        ? result.confidence
+        : result.confidence_cropped || 0,
+
+    probs:
+      analyzedMode === "external"
+        ? result.all_classes_probs
+        : result.all_classes_probs_cropped,
+
+    ig:
+      analyzedMode === "external"
+        ? result.integrated_gradients
+        : result.integrated_gradients_cropped,
+
+    occ:
+      analyzedMode === "external"
+        ? result.occlusion
+        : result.occlusion_cropped,
+
     crop: result.image_cropped
   };
 
