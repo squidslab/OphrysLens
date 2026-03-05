@@ -14,7 +14,7 @@ L'applicazione comunica con il backend Flask tramite API REST.
 
 ---
 
-## 🏗️ Stack Tecnologico
+## Stack Tecnologico
 
 - **Next.js**
 - **React**
@@ -24,7 +24,7 @@ L'applicazione comunica con il backend Flask tramite API REST.
 
 ---
 
-## 📂 Struttura del Progetto
+## Struttura del Progetto
 
 ```
 
@@ -44,7 +44,7 @@ frontend/
 
 ---
 
-## ⚙️ Variabili d'Ambiente
+## Variabili d'Ambiente
 
 Crea un file `.env.local`:
 
@@ -56,7 +56,7 @@ Nel container Docker, questa variabile può essere impostata tramite `docker-com
 
 ---
 
-## ▶️ Avvio (senza Docker)
+## Avvio (senza Docker)
 
 Dalla cartella `frontend`:
 
@@ -94,7 +94,7 @@ docker run -p 3000:3000 \
 
 ---
 
-## 🚀 Avvio tramite Docker Compose (Raccomandato)
+## Avvio tramite Docker Compose (Raccomandato)
 
 Dalla root del progetto:
 
@@ -110,7 +110,7 @@ http://localhost:3000
 
 ---
 
-## 🔁 Flusso di Comunicazione
+## Flusso di Comunicazione
 
 1. L’utente carica un’immagine
 2. Il frontend invia una richiesta al backend:
@@ -133,7 +133,7 @@ http://localhost:3000
 
 ---
 
-## 🧠 Modalità di Analisi
+## Modalità di Analisi
 
 * **Original (Integrated)** → Analisi sull'immagine completa
 * **External (Cropped)** → Analisi sull'area rilevata dal detector
