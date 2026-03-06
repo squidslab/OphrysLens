@@ -55,10 +55,21 @@ def process_image_logic(file_storage):
         
         total_time = time.time() - start_time
         print(f"+++ [THREAD {thread_id}] FINITO: {filename} in {total_time:.3f}s", flush=True)
+
+        W, H = img.size
+        normalized_boxes = []
+        for box in all_boxes:
+            x_min, y_min, x_max, y_max = box
+            normalized_boxes.append([
+                x_min / W, # x_min percentuale
+                y_min / H, # y_min percentuale
+                x_max / W, # x_max percentuale
+                y_max / H  # y_max percentuale
+            ])
         
         return {
             "image_b64": f"data:image/jpeg;base64,{img_str}",
-            "boxes": all_boxes,
+            "boxes": normalized_boxes,
             "scores": all_scores,
             "count": len(all_scores),
             "error": False

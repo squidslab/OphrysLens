@@ -94,11 +94,11 @@ const EditorCanvas = forwardRef<HTMLImageElement, EditorCanvasProps>(({
             const score = scores[idx] || 0;
             const color = isElim ? '#ef4444' : getScoreColor(score, isMan);
             
-            const left = (box[0] / naturalSize.w) * 100;
-            const top = (box[1] / naturalSize.h) * 100;
-            const width = ((box[2] - box[0]) / naturalSize.w) * 100;
-            const height = ((box[3] - box[1]) / naturalSize.h) * 100;
-
+            const left = box[0] * 100;
+            const top = box[1] * 100;
+            const width = (box[2] - box[0]) * 100;
+            const height = (box[3] - box[1]) * 100;
+            
             return (
               <div 
                 key={idx}
