@@ -2,9 +2,8 @@ from flask import Flask
 from flask_cors import CORS
 from app.api.inference import inference_bp
 from app.model_fun.model_loader import load_resources # Resource loading function
-from app.api.db_inference import db_inference_bp
+from app.api.db_crop import db_crop_bp
 from app.api.save_db import save_bp
-from app.api.new_db_inference import new_db_inference_bp
 from app import model_state
 
 onevall_models = None
@@ -19,8 +18,7 @@ def create_app():
     print("--- MODELS LOADED SUCCESSFULLY ---")
 
     app.register_blueprint(inference_bp)
-    app.register_blueprint(db_inference_bp)
-    app.register_blueprint(new_db_inference_bp)
+    app.register_blueprint(db_crop_bp)
     app.register_blueprint(save_bp)
 
     return app

@@ -3,9 +3,11 @@ import requests
 import time
 from PIL import Image
 
+# Script per il cropping massivo su directory
+
 # --- CONFIGURATION ---
 API_URL = "http://127.0.0.1:5000/dbinference" 
-INPUT_ROOT = "./input_images"      
+INPUT_ROOT = "./dataset/processor_images"      
 OUTPUT_ROOT = "./processed_results" 
 ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.webp'}
 BATCH_SIZE = 10         
